@@ -4,7 +4,7 @@ import question from "@/data/question";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
 
-export default function Question() {
+export default function Interview() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuestions, setFilteredQuestions] = useState(question);
@@ -20,7 +20,7 @@ export default function Question() {
       question.filter(
         (item) =>
           (activeTab === "All" || item.category === activeTab) &&
-          item.question.toLowerCase().includes(searchQuery.toLowerCase())
+          item.company.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
     setVisibleCount(10);
@@ -67,14 +67,14 @@ export default function Question() {
               <S.SearchBox>
                 <S.SearchInput
                   type="text"
-                  placeholder="프로젝트"
+                  placeholder="원하시는 회사를 검색해보세요!"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
 
                 <S.SearchButton onClick={handleSearch}>
                   <Search size={20} />
-                  질문 찾기
+                  회사 찾기
                 </S.SearchButton>
               </S.SearchBox>
             </S.SearchContainer>
@@ -85,12 +85,12 @@ export default function Question() {
                     <S.QuestionText>{item.question}</S.QuestionText>
                     <S.QuestionRole>{item.company} - {item.field}</S.QuestionRole>
                   </S.QuestionContent>
-                  <S.TeacherName>{item.teacher}</S.TeacherName>
+                  <S.InterviewButton onClick={() => navigate(`/interview/${item.id}`)}>입장하기</S.InterviewButton>
                 </S.QuestionCard>
               ))}
               {visibleCount < filteredQuestions.length && (
                 <S.MoreButton onClick={loadMoreQuestions}>
-                  질문 더보기
+                  면접 더보기
                 </S.MoreButton>
               )}
             </S.QuestionList>
@@ -99,9 +99,9 @@ export default function Question() {
 
         <S.Right>
           <S.SidebarContainer>
-            <S.SidebarTitle onClick={() => navigate("/question")}>Question</S.SidebarTitle>
-            <S.SidebarItem onClick={() => navigate("/question/my")}>My Question</S.SidebarItem>
-            <S.SidebarItem onClick={() => navigate("/question/new")}>New Question</S.SidebarItem>
+            <S.SidebarTitle onClick={() => navigate("/interview")}>interview</S.SidebarTitle>
+            <S.SidebarItem onClick={() => navigate("/interview/my")}>My interview</S.SidebarItem>
+            <S.SidebarItem onClick={() => navigate("/interview/new")}>New interview</S.SidebarItem>
           </S.SidebarContainer>
         </S.Right>
       </S.Flex>

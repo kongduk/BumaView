@@ -187,7 +187,7 @@ export const QuestionText = styled.div`
 
 export const QuestionRole = styled.div`
   font-size: 14px;
-  color: #666;
+  font-weight: 600;
 `;
 
 export const RoleContainer = styled.div`
@@ -196,9 +196,9 @@ export const RoleContainer = styled.div`
   align-items: center;
 `;
 
-export const TeacherName = styled.div`
+export const InterviewButton = styled.div`
   font-size: 14px;
-  color: #666;
+  color: #008CFF;
   white-space: nowrap;
   margin-left: 16px;
 `;

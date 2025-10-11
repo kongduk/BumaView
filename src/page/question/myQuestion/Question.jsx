@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Search, MessageCircleQuestion } from "lucide-react";
-import question from "@/data/question";
-import * as S from "./styles";
+import myQuestion from "@/data/myQuestion";
+import * as S from "../styles";
 import { useNavigate } from "react-router-dom";
 
-export default function Question() {
+export default function MyQuestion() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredQuestions, setFilteredQuestions] = useState(question);
+  const [filteredQuestions, setFilteredQuestions] = useState(myQuestion);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
 
@@ -17,7 +17,7 @@ export default function Question() {
 
   const handleSearch = () => {
     setFilteredQuestions(
-      question.filter(
+      filteredQuestions.filter(
         (item) =>
           (activeTab === "All" || item.category === activeTab) &&
           item.question.toLowerCase().includes(searchQuery.toLowerCase())
@@ -29,17 +29,13 @@ export default function Question() {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setFilteredQuestions(
-      question.filter(
+      myQuestion.filter(
         (item) =>
           (tab === "All" || item.category === tab) &&
           item.question.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
     setVisibleCount(10);
-  };
-
-  const openModal = () => {
-    setIsModalOpen(!isModalOpen);
   };
 
   const loadMoreQuestions = () => {
@@ -52,7 +48,7 @@ export default function Question() {
         <S.Left>
           <S.Main>
             <S.SearchContainer>
-              <S.CategoryTabs>
+            <S.CategoryTabs>
                 {tabs.map((tab) => (
                   <S.Tab
                     key={tab}
@@ -83,7 +79,13 @@ export default function Question() {
                 <S.QuestionCard key={item.id}>
                   <S.QuestionContent>
                     <S.QuestionText>{item.question}</S.QuestionText>
-                    <S.QuestionRole>{item.company} - {item.field}</S.QuestionRole>
+                    <S.RoleContainer>
+                      <S.QuestionRole>{item.company} - {item.field}</S.QuestionRole>
+                      <S.ButtonContainer>
+                        <S.ModifyButton>수정</S.ModifyButton>
+                        <S.DeleteButton>삭제</S.DeleteButton>
+                      </S.ButtonContainer>
+                    </S.RoleContainer>
                   </S.QuestionContent>
                   <S.TeacherName>{item.teacher}</S.TeacherName>
                 </S.QuestionCard>
