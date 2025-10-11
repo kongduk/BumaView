@@ -55,8 +55,42 @@ export const Header = styled.header`
 `;
 
 export const Profile = styled.div`
-  font-size: 0.9rem;
-  color: gray;
+  cursor: pointer;
+  padding: 0 10px;
+  &.active {
+    color: #4facfe;
+  }
+`;
+
+export const ProfileContainer = styled.div`
+  position: relative;
+`;
+
+export const DropdownMenu = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+`;
+
+export const DropdownItem = styled.div`
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  white-space: nowrap;
+
+  &:hover {
+    background: #f5f5f5;
+  }
 `;
 
 export const LogoContainer = styled.div`

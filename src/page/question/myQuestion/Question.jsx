@@ -76,14 +76,14 @@ export default function MyQuestion() {
             </S.SearchContainer>
             <S.QuestionList>
               {filteredQuestions.slice(0, visibleCount).map((item) => (
-                <S.QuestionCard key={item.id}>
+                <S.QuestionCard key={item.id} onClick={() => navigate(`/question/${item.id}`)}>
                   <S.QuestionContent>
                     <S.QuestionText>{item.question}</S.QuestionText>
                     <S.RoleContainer>
                       <S.QuestionRole>{item.company} - {item.field}</S.QuestionRole>
                       <S.ButtonContainer>
-                        <S.ModifyButton>수정</S.ModifyButton>
-                        <S.DeleteButton>삭제</S.DeleteButton>
+                        <S.ModifyButton onClick={(e) => { e.stopPropagation(); navigate(`/question/edit/${item.id}`); }}>수정</S.ModifyButton>
+                        <S.DeleteButton onClick={(e) => e.stopPropagation()}>삭제</S.DeleteButton>
                       </S.ButtonContainer>
                     </S.RoleContainer>
                   </S.QuestionContent>

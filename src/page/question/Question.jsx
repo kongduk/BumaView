@@ -80,7 +80,7 @@ export default function Question() {
             </S.SearchContainer>
             <S.QuestionList>
               {filteredQuestions.slice(0, visibleCount).map((item) => (
-                <S.QuestionCard key={item.id}>
+                <S.QuestionCard key={item.id} onClick={() => navigate(`/question/${item.id}`)}>
                   <S.QuestionContent>
                     <S.QuestionText>{item.question}</S.QuestionText>
                     <S.QuestionRole>{item.company} - {item.field}</S.QuestionRole>
