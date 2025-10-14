@@ -8,7 +8,6 @@ export default function Question() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuestions, setFilteredQuestions] = useState(question);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
 
   const navigate = useNavigate();
@@ -36,10 +35,6 @@ export default function Question() {
       )
     );
     setVisibleCount(10);
-  };
-
-  const openModal = () => {
-    setIsModalOpen(!isModalOpen);
   };
 
   const loadMoreQuestions = () => {

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function NewInterview() {
   const navigate = useNavigate();
-  const fields = ["Web", "Ai", "Security", "Embedded", "Game"];
+  const fields = ["Front", "Back", "Ai", "Security", "Embedded", "Game"];
 
   return (
     <S.Container>

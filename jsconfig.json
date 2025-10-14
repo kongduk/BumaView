@@ -4,7 +4,12 @@
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"]
-    }
+    },
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "types": ["vite/client"]
   },
   "exclude": ["node_modules", "dist"]
 }
