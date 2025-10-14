@@ -2,26 +2,24 @@
 import React, { useState } from "react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
+import { useCreateCompany } from "@/lib/hooks/useCompany";
 
 export default function NewCompany() {
-  const [companies, setCompanies] = useState([{ name: "", description: "" }]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const navigate = useNavigate();
-
-  const handleAddCompany = () => {
-    setCompanies([...companies, { name: "", description: "" }]);
-  };
-
-  const handleCompanyChange = (index, field, value) => {
-    const newCompanies = [...companies];
-    newCompanies[index][field] = value;
-    setCompanies(newCompanies);
-  };
+  const createCompanyMutation = useCreateCompany();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add logic to save the new companies
-    console.log(companies);
-    navigate("/company");
+    createCompanyMutation.mutate(
+      { name, description },
+      {
+        onSuccess: () => {
+          navigate("/company");
+        },
+      }
+    );
   };
 
   return (
@@ -29,40 +27,28 @@ export default function NewCompany() {
       <S.Main>
         <S.Title>새 회사 추가</S.Title>
         <form onSubmit={handleSubmit}>
-          {companies.map((company, index) => (
-            <S.CompanyForm key={index}>
-              <S.FormGroup>
-                <S.Label htmlFor={`companyName-${index}`}>회사 이름</S.Label>
-                <S.Input
-                  type="text"
-                  id={`companyName-${index}`}
-                  value={company.name}
-                  onChange={(e) => handleCompanyChange(index, "name", e.target.value)}
-                  required
-                />
-              </S.FormGroup>
-              <S.FormGroup>
-                <S.Label htmlFor={`description-${index}`}>회사 설명</S.Label>
-                <S.Textarea
-                  id={`description-${index}`}
-                  value={company.description}
-                  onChange={(e) => handleCompanyChange(index, "description", e.target.value)}
-                  required
-                />
-              </S.FormGroup>
-              {index > 0 && (
-                <S.DeleteButton type="button" onClick={() => {
-                  const newCompanies = [...companies];
-                  newCompanies.splice(index, 1);
-                  setCompanies(newCompanies);
-                }}>
-                  삭제
-                </S.DeleteButton>
-              )}
-            </S.CompanyForm>
-          ))}
-          <S.AddCompanyButton type="button" onClick={handleAddCompany}>회사 추가하기</S.AddCompanyButton>
-          <S.SubmitButton type="submit">모든 회사 등록</S.SubmitButton>
+          <S.CompanyForm>
+            <S.FormGroup>
+              <S.Label htmlFor="companyName">회사 이름</S.Label>
+              <S.Input
+                type="text"
+                id="companyName"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </S.FormGroup>
+            <S.FormGroup>
+              <S.Label htmlFor="description">회사 설명</S.Label>
+              <S.Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </S.FormGroup>
+          </S.CompanyForm>
+          <S.SubmitButton type="submit">회사 등록</S.SubmitButton>
         </form>
       </S.Main>
     </S.Container>
