@@ -23,10 +23,10 @@ import ExpectedQuestionDetail from "@/page/expected/ExpectedQuestionDetail";
 import QuestionDetail from "@/page/question/detail/QuestionDetail";
 import EditQuestion from "@/page/question/edit/EditQuestion";
 import Analyze from "@/page/analyze/Analyze";
-import ReviewList from "@/page/review/ReviewList";
-import NewReview from "@/page/review/NewReview";
-import EditReview from "@/page/review/EditReview";
-import ReviewDetail from "@/page/review/ReviewDetail";
+import ReviewList from "@/page/Interview/review/ReviewList";
+import NewReview from "@/page/Interview/review/NewReview";
+import EditReview from "@/page/Interview/review/EditReview";
+import ReviewDetail from "@/page/Interview/review/ReviewDetail";
 
 export const AppRoutes = () => {
   return (
