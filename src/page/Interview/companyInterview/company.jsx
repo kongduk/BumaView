@@ -1,34 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HelpCircle } from "lucide-react";
-import question from "@/data/question";
 import * as S from "./styles";
 import { useParams } from "react-router-dom";
+import { useQuestionDetails } from "@/lib/question/hooks/useQuestion";
 
 export default function CompanyInterview() {
-  const [current, setCurrent] = useState(null);
   const [aiQuestion, setAiQuestion] = useState("AI의 질문은 여기에 뜨게 됩니다. 최대 두줄 분량의 질문이 뜨게됩니다.");
   const [recording, setRecording] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
-  const recordingRef = useRef(null);
-  const [hasFirstAnswer, setHasFirstAnswer] = useState(false);
+  const ws = useRef(null);
   const { id } = useParams();
-
-  useEffect(() => {
-    if (id) {
-      const selectedQuestion = question.find(q => q.id === parseInt(id));
-      setCurrent(selectedQuestion);
-    }
-  }, [id]);
+  const { data: current } = useQuestionDetails(id);
 
   useEffect(() => {
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: true, 
-          audio: true 
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -38,6 +29,33 @@ export default function CompanyInterview() {
       }
     };
     startCamera();
+
+    ws.current = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'question') {
+        setAiQuestion(message.data);
+      }
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -64,20 +82,12 @@ export default function CompanyInterview() {
         }
       }
 
-      if (final) {
-        setRecording(prev => {
-          if (!hasFirstAnswer) {
-            setHasFirstAnswer(true);
-            return prev + "대답: " + final;
-          }
-          return prev + "대답: " + final;
-        });
-        setInterimTranscript("");
+      if (final && ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.send(JSON.stringify({ type: 'answer', data: final }));
+        setRecording(prev => prev + "나의 답변: " + final);
       }
 
-      if (interim) {
-        setInterimTranscript(interim);
-      }
+      setInterimTranscript(interim);
     };
 
     recognition.onerror = (event) => {
@@ -86,19 +96,11 @@ export default function CompanyInterview() {
 
     recognitionRef.current = recognition;
     recognition.start();
-    setIsRecording(true);
 
     return () => {
       recognition.stop();
-      setIsRecording(false);
     };
-  }, [hasFirstAnswer]);
-
-  useEffect(() => {
-    if (recordingRef.current) {
-      recordingRef.current.scrollTop = recordingRef.current.scrollHeight;
-    }
-  }, [recording, interimTranscript]);
+  }, []);
 
   return (
     <S.Container>
@@ -107,16 +109,14 @@ export default function CompanyInterview() {
           <S.Main>
             <S.InterviewContainer>
               <S.FilterButtons>
-                <S.FilterButton className="active">{current?.field || ""}</S.FilterButton>
-                <S.FilterButton>{current?.company || ""}</S.FilterButton>
+                <S.FilterButton className="active">{current?.occupation_id || ""}</S.FilterButton>
+                <S.FilterButton>{current?.company_id || ""}</S.FilterButton>
               </S.FilterButtons>
 
-              {/* 카메라 */}
               <S.CameraContainer>
                 <S.Video ref={videoRef} autoPlay muted playsInline />
               </S.CameraContainer>
 
-              {/* AI 질문 */}
               <S.AIQuestionContainer>
                 <S.QuestionIcon>
                   <HelpCircle size={20} />
@@ -127,11 +127,10 @@ export default function CompanyInterview() {
           </S.Main>
         </S.Left>
 
-        {/* 기록 박스 */}
         <S.Right>
           <S.RecordingContainer>
             <S.RecordingTitle>기록</S.RecordingTitle>
-            <S.RecordingContent ref={recordingRef}>
+            <S.RecordingContent>
               {recording}
               <span style={{ color: "gray" }}>{interimTranscript}</span>
             </S.RecordingContent>
