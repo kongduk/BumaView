@@ -196,11 +196,35 @@ export const RoleContainer = styled.div`
   align-items: center;
 `;
 
-export const InterviewButton = styled.div`
+export const InterviewButton = styled.button`
   font-size: 14px;
-  color: #008CFF;
+  color: white;
+  background-color: #008CFF;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
   white-space: nowrap;
   margin-left: 16px;
+  &:hover {
+    background-color: #007AE5;
+  }
+`;
+
+export const ReviewButton = styled.button`
+    font-size: 14px;
+    color: #008CFF;
+    background-color: transparent;
+    border: 1px solid #008CFF;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 8px;
+    &:hover {
+        background-color: #008CFF;
+        color: white;
+    }
 `;
 
 export const ItemContainer = styled.div`

@@ -23,8 +23,12 @@ import ExpectedQuestionDetail from "@/page/expected/ExpectedQuestionDetail";
 import QuestionDetail from "@/page/question/detail/QuestionDetail";
 import EditQuestion from "@/page/question/edit/EditQuestion";
 import Analyze from "@/page/analyze/Analyze";
+import ReviewList from "@/page/review/ReviewList";
+import NewReview from "@/page/review/NewReview";
+import EditReview from "@/page/review/EditReview";
+import ReviewDetail from "@/page/review/ReviewDetail";
 
-export const AppRoutes = ({ resumes, handleAddResume, handleUpdateResume, handleDeleteResume }) => {
+export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Main />} />
@@ -40,17 +44,21 @@ export const AppRoutes = ({ resumes, handleAddResume, handleUpdateResume, handle
       <Route path="company" element={<CompanyList />} />
       <Route path="company/new" element={<NewCompany />} />
       <Route path="company/:id" element={<CompanyDetail />} />
-      <Route path="resume/my" element={<MyResumes resumes={resumes} handleDeleteResume={handleDeleteResume} />} />
-      <Route path="resume/:id" element={<MyResumeDetail resumes={resumes} />} />
-      <Route path="resume/new" element={<NewResume handleAddResume={handleAddResume} />} />
-      <Route path="resume/shared" element={<SharedResumes resumes={resumes} />} />
-      <Route path="resume/shared/:id" element={<SharedResumeDetail resumes={resumes} />} />
-      <Route path="resume/edit/:id" element={<EditResume resumes={resumes} handleUpdateResume={handleUpdateResume} />} />
+      <Route path="resume/my" element={<MyResumes />} />
+      <Route path="resume/:id" element={<MyResumeDetail />} />
+      <Route path="resume/new" element={<NewResume />} />
+      <Route path="resume/shared" element={<SharedResumes />} />
+      <Route path="resume/shared/:id" element={<SharedResumeDetail />} />
+      <Route path="resume/edit/:id" element={<EditResume />} />
       <Route path="expected" element={<ExpectedQuestionsList />} />
       <Route path="expected/new" element={<CreateExpectedQuestions />} />
       <Route path="expected/:id" element={<ExpectedQuestionDetail />} />
       <Route path="question/:id" element={<QuestionDetail />} />
       <Route path="question/edit/:id" element={<EditQuestion />} />
+      <Route path="review/list/:questionId" element={<ReviewList />} />
+      <Route path="review/new/:questionId" element={<NewReview />} />
+      <Route path="review/:reviewId" element={<ReviewDetail />} />
+      <Route path="review/edit/:reviewId" element={<EditReview />} />
     </Routes>
   );
 };

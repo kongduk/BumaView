@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchResumes, fetchResumeDetails, fetchMyResumes, addResume, updateResume, deleteResume } from '../resume';
+import { fetchResumes, fetchResumeDetails, fetchMyResumes, addResume, updateResume, deleteResume } from '../resume/resume';
 
 export const useResumes = () => {
   return useQuery({
