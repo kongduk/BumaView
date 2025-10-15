@@ -1,0 +1,150 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Customapi from "@/lib/api";
+
+// Dummy Data for testing
+const dummyQuestions = [
+  {
+    question_id: 1,
+    company_id: 101,
+    occupation_id: "Web",
+    author_id: 1,
+    question_text: "프론트엔드 개발자로서 가장 중요하다고 생각하는 역량은 무엇인가요?",
+    model_answer: "사용자 경험을 최우선으로 생각하는 능력과 지속적인 학습 능력입니다.",
+    difficulty: "상",
+    model_config: { from_attributes: true }
+  },
+  {
+    question_id: 2,
+    company_id: 102,
+    occupation_id: "Ai",
+    author_id: 2,
+    question_text: "AI 모델 학습 시 오버피팅을 방지하는 방법에 대해 설명해주세요.",
+    model_answer: "드롭아웃, 조기 종료, 데이터 증강 등의 기법을 사용할 수 있습니다.",
+    difficulty: "중",
+    model_config: { from_attributes: true }
+  },
+  {
+    question_id: 3,
+    company_id: 103,
+    occupation_id: "Security",
+    author_id: 3,
+    question_text: "웹 애플리케이션 보안에서 XSS 공격을 방어하는 방법에 대해 아는 대로 말해주세요.",
+    model_answer: "입력 값 검증, 출력 인코딩, CSP 설정 등을 통해 방어할 수 있습니다.",
+    difficulty: "하",
+    model_config: { from_attributes: true }
+  },
+  {
+    question_id: 4,
+    company_id: 101,
+    occupation_id: "Web",
+    author_id: 1,
+    question_text: "React에서 상태 관리를 위해 어떤 라이브러리를 사용해 보셨나요?",
+    model_answer: "Redux, Recoil, Zustand 등을 사용해 보았습니다.",
+    difficulty: "중",
+    model_config: { from_attributes: true }
+  },
+  {
+    question_id: 5,
+    company_id: 102,
+    occupation_id: "Embedded",
+    author_id: 4,
+    question_text: "임베디드 시스템에서 실시간 운영체제(RTOS)의 역할은 무엇인가요?",
+    model_answer: "정해진 시간 안에 작업을 처리할 수 있도록 스케줄링 및 자원 관리를 담당합니다.",
+    difficulty: "상",
+    model_config: { from_attributes: true }
+  },
+];
+
+// API Functions
+const fetchQuestions = async () => {
+  try {
+    const response = await Customapi.get("/interview-question/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching questions from API, returning dummy data:", error);
+    return dummyQuestions;
+  }
+};
+
+const fetchQuestionDetails = async (id) => {
+  try {
+    const response = await Customapi.get(`/interview-question/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching question details for ID ${id} from API, returning dummy data:`, error);
+    return dummyQuestions.find(q => q.question_id === parseInt(id)) || null;
+  }
+};
+
+const addQuestion = async (newQuestion) => {
+  const response = await Customapi.post("/interview-question/", newQuestion);
+  return response.data;
+};
+
+const deleteQuestion = async (id) => {
+  const response = await Customapi.delete(`/interview-question/${id}`);
+  return response.data;
+};
+
+const updateQuestion = async ({ id, ...updatedQuestion }) => {
+  try {
+    const response = await Customapi.put(`/interview-question/${id}`, updatedQuestion);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating question with ID ${id}, using dummy data logic:`, error);
+    const index = dummyQuestions.findIndex(q => q.question_id === parseInt(id));
+    if (index !== -1) {
+      dummyQuestions[index] = { ...dummyQuestions[index], ...updatedQuestion };
+      return dummyQuestions[index];
+    }
+    return null;
+  }
+};
+
+
+// React Query Hooks
+export const useQuestions = () => {
+  return useQuery({
+    queryKey: ['questions'],
+    queryFn: fetchQuestions,
+  });
+};
+
+export const useQuestionDetails = (id) => {
+  return useQuery({
+    queryKey: ['question', id],
+    queryFn: () => fetchQuestionDetails(id),
+    enabled: !!id,
+  });
+};
+
+export const useAddQuestion = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addQuestion,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+    },
+  });
+};
+
+export const useDeleteQuestion = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteQuestion,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+    },
+  });
+};
+
+export const useUpdateQuestion = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateQuestion,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+      queryClient.invalidateQueries({ queryKey: ['question', variables.id] });
+    },
+  });
+};

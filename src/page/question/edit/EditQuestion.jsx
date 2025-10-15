@@ -1,23 +1,21 @@
-
 import React, { useState, useEffect } from "react";
 import * as S from "./styles";
 import { useNavigate, useParams } from "react-router-dom";
-import questions from "@/data/question";
+import { useQuestionDetails, useUpdateQuestion } from "@/lib/question/question";
 
 export default function EditQuestion() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { data: initialQuestion, isLoading, isError, error } = useQuestionDetails(id);
+  const updateMutation = useUpdateQuestion();
+
   const [question, setQuestion] = useState(null);
 
   useEffect(() => {
-    const q = questions.find((q) => q.id === parseInt(id));
-    if (q) {
-      setQuestion(q);
-    } else {
-      // Handle question not found
-      navigate("/question");
+    if (initialQuestion) {
+      setQuestion(initialQuestion);
     }
-  }, [id, navigate]);
+  }, [initialQuestion]);
 
   const handleChange = (field, value) => {
     setQuestion({ ...question, [field]: value });
@@ -25,13 +23,23 @@ export default function EditQuestion() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add logic to save the updated question
-    console.log(question);
-    navigate(`/question/${id}`);
+    updateMutation.mutate({ id, ...question }, {
+      onSuccess: () => {
+        navigate(`/question/${id}`);
+      }
+    });
   };
 
+  if (isLoading) {
+    return <S.Container><S.Main><div>질문을 불러오는 중입니다...</div></S.Main></S.Container>;
+  }
+
+  if (isError) {
+    return <S.Container><S.Main><div>질문을 불러오는데 오류가 발생했습니다: {error.message}</div></S.Main></S.Container>;
+  }
+
   if (!question) {
-    return <div>로딩중...</div>;
+    return <S.Container><S.Main><div>질문을 찾을 수 없습니다.</div></S.Main></S.Container>;
   }
 
   return (
@@ -41,21 +49,21 @@ export default function EditQuestion() {
           <S.FormTitle>질문 수정</S.FormTitle>
           <form onSubmit={handleSubmit}>
             <S.FormGroup>
-              <S.Label htmlFor="company">회사 이름</S.Label>
+              <S.Label htmlFor="company_id">회사 ID</S.Label>
               <S.Input
-                type="text"
-                id="company"
-                value={question.company}
-                onChange={(e) => handleChange("company", e.target.value)}
+                type="number"
+                id="company_id"
+                value={question.company_id}
+                onChange={(e) => handleChange("company_id", parseInt(e.target.value))}
                 required
               />
             </S.FormGroup>
             <S.FormGroup>
-              <S.Label htmlFor="category">분야</S.Label>
+              <S.Label htmlFor="occupation_id">분야</S.Label>
               <S.Select
-                id="category"
-                value={question.category}
-                onChange={(e) => handleChange("category", e.target.value)}
+                id="occupation_id"
+                value={question.occupation_id}
+                onChange={(e) => handleChange("occupation_id", e.target.value)}
               >
                 {["Web", "Ai", "Security", "Embedded", "Game"].map((c) => (
                   <option key={c} value={c}>
@@ -65,24 +73,34 @@ export default function EditQuestion() {
               </S.Select>
             </S.FormGroup>
             <S.FormGroup>
-              <S.Label htmlFor="field">세부 분야</S.Label>
-              <S.Input
-                type="text"
-                id="field"
-                value={question.field}
-                onChange={(e) => handleChange("field", e.target.value)}
-              />
-            </S.FormGroup>
-            <S.FormGroup>
-              <S.Label htmlFor="question">질문</S.Label>
+              <S.Label htmlFor="question_text">질문</S.Label>
               <S.Textarea
-                id="question"
-                value={question.question}
-                onChange={(e) => handleChange("question", e.target.value)}
+                id="question_text"
+                value={question.question_text}
+                onChange={(e) => handleChange("question_text", e.target.value)}
                 required
               />
             </S.FormGroup>
-            <S.SubmitButton type="submit">수정 완료</S.SubmitButton>
+            <S.FormGroup>
+              <S.Label htmlFor="model_answer">모범답안</S.Label>
+              <S.Textarea
+                id="model_answer"
+                value={question.model_answer}
+                onChange={(e) => handleChange("model_answer", e.target.value)}
+                required
+              />
+            </S.FormGroup>
+            <S.FormGroup>
+                <S.Label>난이도</S.Label>
+                <S.Select value={question.difficulty} onChange={(e) => handleChange("difficulty", e.target.value)}>
+                    <option value="상">상</option>
+                    <option value="중">중</option>
+                    <option value="하">하</option>
+                </S.Select>
+            </S.FormGroup>
+            <S.SubmitButton type="submit" disabled={updateMutation.isLoading}>
+              {updateMutation.isLoading ? '수정 중...' : '수정 완료'}
+            </S.SubmitButton>
           </form>
         </S.FormContainer>
       </S.Main>

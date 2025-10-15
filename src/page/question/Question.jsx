@@ -1,45 +1,56 @@
-import React, { useState } from "react";
-import { Search, MessageCircleQuestion } from "lucide-react";
-import question from "@/data/question";
+import React, { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
+import { useQuestions } from "@/lib/question/question"; // Import useQuestions hook
 
 export default function Question() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredQuestions, setFilteredQuestions] = useState(question);
+  const [filteredQuestions, setFilteredQuestions] = useState([]); // Initialize as empty
   const [visibleCount, setVisibleCount] = useState(10);
 
   const navigate = useNavigate();
 
   const tabs = ["All", "Web", "Ai", "Security", "Embedded"];
 
-  const handleSearch = () => {
-    setFilteredQuestions(
-      question.filter(
+  const { data: questions, isLoading, isError, error } = useQuestions(); // Use useQuestions hook
+
+  // Effect to filter questions whenever questions data, activeTab, or searchQuery changes
+  useEffect(() => {
+    if (questions) {
+      const newFilteredQuestions = questions.filter(
         (item) =>
-          (activeTab === "All" || item.category === activeTab) &&
-          item.question.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
-    setVisibleCount(10);
+          (activeTab === "All" || item.occupation_id === activeTab) && // Assuming occupation_id maps to tabs
+          item.question_text.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredQuestions(newFilteredQuestions);
+      setVisibleCount(10); // Reset visible count on new filter
+    }
+  }, [questions, activeTab, searchQuery]);
+
+
+  const handleSearch = () => {
+    // Filtering is now handled by the useEffect above, just trigger a re-filter by changing searchQuery
+    // No direct action needed here as useEffect will react to searchQuery change
   };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    setFilteredQuestions(
-      question.filter(
-        (item) =>
-          (tab === "All" || item.category === tab) &&
-          item.question.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
-    setVisibleCount(10);
+    // Filtering is now handled by the useEffect above, just trigger a re-filter by changing activeTab
   };
 
   const loadMoreQuestions = () => {
     setVisibleCount((prevCount) => prevCount + 10);
   };
+
+  if (isLoading) {
+    return <S.Container><S.Main><div>질문 목록을 불러오는 중입니다...</div></S.Main></S.Container>;
+  }
+
+  if (isError) {
+    return <S.Container><S.Main><div>질문 목록을 불러오는데 오류가 발생했습니다: {error.message}</div></S.Main></S.Container>;
+  }
 
   return (
     <S.Container>
@@ -75,12 +86,13 @@ export default function Question() {
             </S.SearchContainer>
             <S.QuestionList>
               {filteredQuestions.slice(0, visibleCount).map((item) => (
-                <S.QuestionCard key={item.id} onClick={() => navigate(`/question/${item.id}`)}>
+                <S.QuestionCard key={item.question_id} onClick={() => navigate(`/question/${item.question_id}`)}>
                   <S.QuestionContent>
-                    <S.QuestionText>{item.question}</S.QuestionText>
-                    <S.QuestionRole>{item.company} - {item.field}</S.QuestionRole>
+                    <S.QuestionText>{item.question_text}</S.QuestionText>
+                    {/* Display difficulty if available, or remove if not relevant for list view */}
+                    <S.QuestionRole>난이도: {item.difficulty || '미정'}</S.QuestionRole>
                   </S.QuestionContent>
-                  <S.TeacherName>{item.teacher}</S.TeacherName>
+                  <S.TeacherName>{item.company_id}-{item.occupation_id}</S.TeacherName>
                 </S.QuestionCard>
               ))}
               {visibleCount < filteredQuestions.length && (

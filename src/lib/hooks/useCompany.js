@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCompanies, getCompanyById, createCompany, deleteCompany } from '../companyApi';
+import { getCompanies, getCompanyById, createCompany, deleteCompany } from '../company/companyApi';
 
 const companyKeys = {
   all: ['companies'],

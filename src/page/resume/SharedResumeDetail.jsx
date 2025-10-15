@@ -1,26 +1,33 @@
-
 import React from "react";
 import * as S from "./styles";
 import { useParams } from "react-router-dom";
+import { useResumeDetails } from "@/lib/resume/resumeApi";
 
-export default function SharedResumeDetail({ resumes }) {
+export default function SharedResumeDetail() {
   const { id } = useParams();
-  console.log("Resumes in SharedResumeDetail:", resumes);
-  console.log("ID in SharedResumeDetail:", id);
-  const resume = resumes.find((r) => r.id === parseInt(id));
+  const { data: resume, isLoading, isError, error } = useResumeDetails(id);
 
-  console.log("Found resume:", resume);
+  if (isLoading) {
+    return <S.Container><S.Main><div>자기소개서를 불러오는 중입니다...</div></S.Main></S.Container>;
+  }
+
+  if (isError) {
+    return <S.Container><S.Main><div>자기소개서를 불러오는데 오류가 발생했습니다: {error.message}</div></S.Main></S.Container>;
+  }
 
   if (!resume) {
-    return <div>자소서를 찾을 수 없습니다.</div>;
+    return <S.Container><S.Main><div>자소서를 찾을 수 없습니다.</div></S.Main></S.Container>;
   }
 
   return (
     <S.Container>
       <S.Main>
-        <S.Title>{resume.title}</S.Title>
+        <S.Title>{resume.original_file_name}</S.Title>
         <S.ContentContainer>
-          <S.Content>{resume.content}</S.Content>
+          <p>회사 ID: {resume.company_id}</p>
+          <p>직군 ID: {resume.occupation_id}</p>
+          <p>생성일: {new Date(resume.created_at).toLocaleDateString()}</p>
+          <S.Content>파일 경로: {resume.path}</S.Content>
         </S.ContentContainer>
       </S.Main>
     </S.Container>
