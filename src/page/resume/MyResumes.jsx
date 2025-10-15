@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
-import { useMyResumes, useDeleteResume, useUpdateResume } from "@/lib/resume/resumeApi";
+import { useMyResumes, useDeleteResume, useUpdateResume } from "@/lib/hooks/useResume";
 
 export default function MyResumes() {
   const navigate = useNavigate();

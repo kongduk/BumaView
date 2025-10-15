@@ -1,4 +1,3 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Customapi from "@/lib/api";
 
 // Dummy Data for testing
@@ -56,7 +55,7 @@ const dummyQuestions = [
 ];
 
 // API Functions
-const fetchQuestions = async () => {
+export const fetchQuestions = async () => {
   try {
     const response = await Customapi.get("/interview-question/");
     return response.data;
@@ -66,7 +65,7 @@ const fetchQuestions = async () => {
   }
 };
 
-const fetchQuestionDetails = async (id) => {
+export const fetchQuestionDetails = async (id) => {
   try {
     const response = await Customapi.get(`/interview-question/${id}`);
     return response.data;
@@ -76,17 +75,17 @@ const fetchQuestionDetails = async (id) => {
   }
 };
 
-const addQuestion = async (newQuestion) => {
+export const addQuestion = async (newQuestion) => {
   const response = await Customapi.post("/interview-question/", newQuestion);
   return response.data;
 };
 
-const deleteQuestion = async (id) => {
+export const deleteQuestion = async (id) => {
   const response = await Customapi.delete(`/interview-question/${id}`);
   return response.data;
 };
 
-const updateQuestion = async ({ id, ...updatedQuestion }) => {
+export const updateQuestion = async ({ id, ...updatedQuestion }) => {
   try {
     const response = await Customapi.put(`/interview-question/${id}`, updatedQuestion);
     return response.data;
@@ -99,52 +98,4 @@ const updateQuestion = async ({ id, ...updatedQuestion }) => {
     }
     return null;
   }
-};
-
-
-// React Query Hooks
-export const useQuestions = () => {
-  return useQuery({
-    queryKey: ['questions'],
-    queryFn: fetchQuestions,
-  });
-};
-
-export const useQuestionDetails = (id) => {
-  return useQuery({
-    queryKey: ['question', id],
-    queryFn: () => fetchQuestionDetails(id),
-    enabled: !!id,
-  });
-};
-
-export const useAddQuestion = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: addQuestion,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
-    },
-  });
-};
-
-export const useDeleteQuestion = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteQuestion,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
-    },
-  });
-};
-
-export const useUpdateQuestion = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateQuestion,
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
-      queryClient.invalidateQueries({ queryKey: ['question', variables.id] });
-    },
-  });
 };

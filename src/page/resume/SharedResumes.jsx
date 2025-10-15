@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
-import { useResumes } from "@/lib/resume/resumeApi";
+import { useResumes } from "@/lib/hooks/useResume";
 
 export default function SharedResumes() {
   const navigate = useNavigate();

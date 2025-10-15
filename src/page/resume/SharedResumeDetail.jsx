@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styles";
 import { useParams } from "react-router-dom";
-import { useResumeDetails } from "@/lib/resume/resumeApi";
+import { useResumeDetails } from "@/lib/hooks/useResume";
 
 export default function SharedResumeDetail() {
   const { id } = useParams();

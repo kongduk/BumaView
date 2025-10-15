@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
-import { useQuestions } from "@/lib/question/question"; // Import useQuestions hook
+import { useQuestions } from "@/lib/hooks/useQuestion"; // Import useQuestions hook
 
 export default function Question() {
   const [activeTab, setActiveTab] = useState("All");

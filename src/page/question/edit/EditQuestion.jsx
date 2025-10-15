@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as S from "./styles";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuestionDetails, useUpdateQuestion } from "@/lib/question/question";
+import { useQuestionDetails, useUpdateQuestion } from "@/lib/hooks/useQuestion";
 
 export default function EditQuestion() {
   const { id } = useParams();

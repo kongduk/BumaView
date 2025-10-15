@@ -1,4 +1,3 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Customapi from "@/lib/api";
 
 // Dummy Data for testing
@@ -39,7 +38,7 @@ const dummyResumes = [
 ];
 
 // API Functions
-const fetchResumes = async () => {
+export const fetchResumes = async () => {
   try {
     const response = await Customapi.get("/application-form/");
     return response.data;
@@ -49,7 +48,7 @@ const fetchResumes = async () => {
   }
 };
 
-const fetchResumeDetails = async (id) => {
+export const fetchResumeDetails = async (id) => {
   try {
     const response = await Customapi.get(`/application-form/${id}`);
     return response.data;
@@ -59,7 +58,7 @@ const fetchResumeDetails = async (id) => {
   }
 };
 
-const fetchMyResumes = async (userId) => {
+export const fetchMyResumes = async (userId) => {
     try {
       const response = await Customapi.get(`/application-form/user/${userId}`);
       return response.data;
@@ -69,12 +68,12 @@ const fetchMyResumes = async (userId) => {
     }
   };
 
-const addResume = async (newResume) => {
+export const addResume = async (newResume) => {
   const response = await Customapi.post("/application-form/", newResume);
   return response.data;
 };
 
-const updateResume = async ({ id, ...updatedResume }) => {
+export const updateResume = async ({ id, ...updatedResume }) => {
     try {
       const response = await Customapi.put(`/application-form/${id}`, updatedResume);
       return response.data;
@@ -89,65 +88,7 @@ const updateResume = async ({ id, ...updatedResume }) => {
     }
   };
 
-const deleteResume = async (id) => {
+export const deleteResume = async (id) => {
   const response = await Customapi.delete(`/application-form/${id}`);
   return response.data;
-};
-
-// React Query Hooks
-export const useResumes = () => {
-  return useQuery({
-    queryKey: ['resumes'],
-    queryFn: fetchResumes,
-  });
-};
-
-export const useResumeDetails = (id) => {
-  return useQuery({
-    queryKey: ['resume', id],
-    queryFn: () => fetchResumeDetails(id),
-    enabled: !!id,
-  });
-};
-
-export const useMyResumes = (userId) => {
-    return useQuery({
-      queryKey: ['myResumes', userId],
-      queryFn: () => fetchMyResumes(userId),
-      enabled: !!userId,
-    });
-  };
-
-export const useAddResume = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: addResume,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      queryClient.invalidateQueries({ queryKey: ['myResumes'] });
-    },
-  });
-};
-
-export const useUpdateResume = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateResume,
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      queryClient.invalidateQueries({ queryKey: ['myResumes'] });
-      queryClient.invalidateQueries({ queryKey: ['resume', variables.id] });
-    },
-  });
-};
-
-export const useDeleteResume = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteResume,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      queryClient.invalidateQueries({ queryKey: ['myResumes'] });
-    },
-  });
 };

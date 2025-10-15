@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styles";
 import { useParams } from "react-router-dom";
-import { useQuestionDetails } from "@/lib/question/question";
+import { useQuestionDetails } from "@/lib/hooks/useQuestion";
 
 export default function QuestionDetail() {
   const { id } = useParams();

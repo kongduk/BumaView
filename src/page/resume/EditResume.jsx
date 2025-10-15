@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as S from "./styles";
 import { useNavigate, useParams } from "react-router-dom";
-import { useResumeDetails, useUpdateResume } from "@/lib/resume/resumeApi";
+import { useResumeDetails, useUpdateResume } from "@/lib/hooks/useResume";
 
 export default function EditResume() {
   const { id } = useParams();

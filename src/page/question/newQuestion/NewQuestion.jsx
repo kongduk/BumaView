@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
-import { useAddQuestion } from "@/lib/question/question";
+import { useAddQuestion } from "@/lib/hooks/useQuestion";
 
 export default function NewQuestion() {
   const [questions, setQuestions] = useState([

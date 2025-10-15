@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
-import { useAddResume } from "@/lib/resume/resumeApi";
+import { useAddResume } from "@/lib/hooks/useResume";
 
 export default function NewResume() {
   const [companyId, setCompanyId] = useState("");
