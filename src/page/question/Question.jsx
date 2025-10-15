@@ -2,55 +2,36 @@ import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import * as S from "./styles";
 import { useNavigate } from "react-router-dom";
-import { useQuestions } from "@/lib/hooks/useQuestion"; // Import useQuestions hook
 
 export default function Question() {
-  const [activeTab, setActiveTab] = useState("All");
+  const [questions, setQuestions] = useState([]);
+  const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredQuestions, setFilteredQuestions] = useState([]); // Initialize as empty
+  const [activeTab, setActiveTab] = useState("All");
   const [visibleCount, setVisibleCount] = useState(10);
-
   const navigate = useNavigate();
 
-  const tabs = ["All", "Web", "Ai", "Security", "Embedded"];
+  const tabs = ["All", "Web", "Ai", "Security", "Embedded", "Game"];
 
-  const { data: questions, isLoading, isError, error } = useQuestions(); // Use useQuestions hook
-
-  // Effect to filter questions whenever questions data, activeTab, or searchQuery changes
   useEffect(() => {
-    if (questions) {
-      const newFilteredQuestions = questions.filter(
-        (item) =>
-          (activeTab === "All" || item.occupation_id === activeTab) && // Assuming occupation_id maps to tabs
-          item.question_text.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredQuestions(newFilteredQuestions);
-      setVisibleCount(10); // Reset visible count on new filter
+    const saved = localStorage.getItem("questions");
+    if (saved) {
+      setQuestions(JSON.parse(saved));
     }
+  }, []);
+
+  useEffect(() => {
+    const filtered = questions.filter(
+      (q) =>
+        (activeTab === "All" || q.occupation_id === activeTab) &&
+        q.question_text.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredQuestions(filtered);
   }, [questions, activeTab, searchQuery]);
 
-
-  const handleSearch = () => {
-    // Filtering is now handled by the useEffect above, just trigger a re-filter by changing searchQuery
-    // No direct action needed here as useEffect will react to searchQuery change
-  };
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    // Filtering is now handled by the useEffect above, just trigger a re-filter by changing activeTab
-  };
-
   const loadMoreQuestions = () => {
-    setVisibleCount((prevCount) => prevCount + 10);
+    setVisibleCount((prev) => prev + 10);
   };
-
-  if (isLoading) {
-    return <S.Container><S.Main><div>질문 목록을 불러오는 중입니다...</div></S.Main></S.Container>;
-  }
-
-  if (isError) {
-    return <S.Container><S.Main><div>질문 목록을 불러오는데 오류가 발생했습니다: {error.message}</div></S.Main></S.Container>;
-  }
 
   return (
     <S.Container>
@@ -63,7 +44,7 @@ export default function Question() {
                   <S.Tab
                     key={tab}
                     className={activeTab === tab ? "active" : ""}
-                    onClick={() => handleTabClick(tab)}
+                    onClick={() => setActiveTab(tab)}
                   >
                     {tab}
                   </S.Tab>
@@ -73,28 +54,35 @@ export default function Question() {
               <S.SearchBox>
                 <S.SearchInput
                   type="text"
-                  placeholder="프로젝트"
+                  placeholder="질문 검색"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-
-                <S.SearchButton onClick={handleSearch}>
-                  <Search size={20} />
-                  질문 찾기
+                <S.SearchButton>
+                  <Search size={20} /> 질문 찾기
                 </S.SearchButton>
               </S.SearchBox>
             </S.SearchContainer>
+
             <S.QuestionList>
-              {filteredQuestions.slice(0, visibleCount).map((item) => (
-                <S.QuestionCard key={item.question_id} onClick={() => navigate(`/question/${item.question_id}`)}>
+              {filteredQuestions.length === 0 && (
+                <div>등록된 질문이 없습니다.</div>
+              )}
+
+              {filteredQuestions.slice(0, visibleCount).map((item, idx) => (
+                <S.QuestionCard key={idx}>
                   <S.QuestionContent>
                     <S.QuestionText>{item.question_text}</S.QuestionText>
-                    {/* Display difficulty if available, or remove if not relevant for list view */}
-                    <S.QuestionRole>난이도: {item.difficulty || '미정'}</S.QuestionRole>
+                    <S.QuestionRole>
+                      난이도: {item.difficulty}
+                    </S.QuestionRole>
                   </S.QuestionContent>
-                  <S.TeacherName>{item.company_id}-{item.occupation_id}</S.TeacherName>
+                  <S.TeacherName>
+                    {item.company_id} - {item.occupation_id}
+                  </S.TeacherName>
                 </S.QuestionCard>
               ))}
+
               {visibleCount < filteredQuestions.length && (
                 <S.MoreButton onClick={loadMoreQuestions}>
                   질문 더보기
@@ -106,9 +94,15 @@ export default function Question() {
 
         <S.Right>
           <S.SidebarContainer>
-            <S.SidebarTitle onClick={() => navigate("/question")}>Question</S.SidebarTitle>
-            <S.SidebarItem onClick={() => navigate("/question/my")}>My Question</S.SidebarItem>
-            <S.SidebarItem onClick={() => navigate("/question/new")}>New Question</S.SidebarItem>
+            <S.SidebarTitle onClick={() => navigate("/question")}>
+              Question
+            </S.SidebarTitle>
+            <S.SidebarItem onClick={() => navigate("/question/my")}>
+              My Question
+            </S.SidebarItem>
+            <S.SidebarItem onClick={() => navigate("/question/new")}>
+              New Question
+            </S.SidebarItem>
           </S.SidebarContainer>
         </S.Right>
       </S.Flex>

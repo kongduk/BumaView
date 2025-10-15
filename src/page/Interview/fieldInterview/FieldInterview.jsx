@@ -96,10 +96,6 @@ export default function FieldInterview() {
 
     recognitionRef.current = recognition;
     recognition.start();
-
-    return () => {
-      recognition.stop();
-    };
   }, []);
 
   return (

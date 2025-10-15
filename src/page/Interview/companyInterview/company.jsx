@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { HelpCircle } from "lucide-react";
 import * as S from "./styles";
 import { useParams } from "react-router-dom";
-import { useQuestionDetails } from "@/lib/question/hooks/useQuestion";
+import { useQuestionDetails } from "@/lib/hooks/useQuestion";
 
 export default function CompanyInterview() {
   const [aiQuestion, setAiQuestion] = useState("AI의 질문은 여기에 뜨게 됩니다. 최대 두줄 분량의 질문이 뜨게됩니다.");
@@ -96,10 +96,6 @@ export default function CompanyInterview() {
 
     recognitionRef.current = recognition;
     recognition.start();
-
-    return () => {
-      recognition.stop();
-    };
   }, []);
 
   return (
@@ -139,4 +135,4 @@ export default function CompanyInterview() {
       </S.Flex>
     </S.Container>
   );
-}
+};

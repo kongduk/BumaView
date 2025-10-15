@@ -96,17 +96,6 @@ export const AIQuestionContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-export const QuestionIcon = styled.div`
-  color: #4facfe;
-  flex-shrink: 0;
-`;
-
-export const AIQuestionText = styled.div`
-  font-size: 14px;
-  color: #333;
-  line-height: 1.5;
-`;
-
 export const RecordingContainer = styled.div`
 background: #f9f9f9;
   border-radius: 20px;

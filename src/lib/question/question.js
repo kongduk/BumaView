@@ -1,7 +1,17 @@
 import Customapi from "@/lib/api";
 
-// Dummy Data for testing
-const dummyQuestions = [
+// Helper functions for localStorage
+const getStoredQuestions = () => {
+  const storedQuestions = localStorage.getItem('questions');
+  return storedQuestions ? JSON.parse(storedQuestions) : [];
+};
+
+const setStoredQuestions = (questions) => {
+  localStorage.setItem('questions', JSON.stringify(questions));
+};
+
+// Initial Dummy Data for testing
+const initialDummyQuestions = [
   {
     question_id: 1,
     company_id: 101,
@@ -54,48 +64,44 @@ const dummyQuestions = [
   },
 ];
 
+// Initialize localStorage with dummy data if empty
+if (getStoredQuestions().length === 0) {
+  setStoredQuestions(initialDummyQuestions);
+}
+
 // API Functions
 export const fetchQuestions = async () => {
-  try {
-    const response = await Customapi.get("/interview-question/");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching questions from API, returning dummy data:", error);
-    return dummyQuestions;
-  }
+  return getStoredQuestions();
 };
 
 export const fetchQuestionDetails = async (id) => {
-  try {
-    const response = await Customapi.get(`/interview-question/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching question details for ID ${id} from API, returning dummy data:`, error);
-    return dummyQuestions.find(q => q.question_id === parseInt(id)) || null;
-  }
+  const storedQuestions = getStoredQuestions();
+  return storedQuestions.find(q => q.question_id === parseInt(id)) || null;
 };
 
 export const addQuestion = async (newQuestion) => {
-  const response = await Customapi.post("/interview-question/", newQuestion);
-  return response.data;
+  const storedQuestions = getStoredQuestions();
+  const newId = Math.max(...storedQuestions.map(q => q.question_id), 0) + 1;
+  const questionToAdd = { ...newQuestion, question_id: newId };
+  const updatedQuestions = [...storedQuestions, questionToAdd];
+  setStoredQuestions(updatedQuestions);
+  return questionToAdd;
 };
 
 export const deleteQuestion = async (id) => {
-  const response = await Customapi.delete(`/interview-question/${id}`);
-  return response.data;
+  let storedQuestions = getStoredQuestions();
+  const updatedQuestions = storedQuestions.filter(q => q.question_id !== parseInt(id));
+  setStoredQuestions(updatedQuestions);
+  return { success: true }; // Indicate success
 };
 
 export const updateQuestion = async ({ id, ...updatedQuestion }) => {
-  try {
-    const response = await Customapi.put(`/interview-question/${id}`, updatedQuestion);
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating question with ID ${id}, using dummy data logic:`, error);
-    const index = dummyQuestions.findIndex(q => q.question_id === parseInt(id));
-    if (index !== -1) {
-      dummyQuestions[index] = { ...dummyQuestions[index], ...updatedQuestion };
-      return dummyQuestions[index];
-    }
-    return null;
+  let storedQuestions = getStoredQuestions();
+  const index = storedQuestions.findIndex(q => q.question_id === parseInt(id));
+  if (index !== -1) {
+    storedQuestions[index] = { ...storedQuestions[index], ...updatedQuestion };
+    setStoredQuestions(storedQuestions);
+    return storedQuestions[index];
   }
+  return null;
 };

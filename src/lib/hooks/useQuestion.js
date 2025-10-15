@@ -20,8 +20,14 @@ export const useAddQuestion = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addQuestion,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
+    onSuccess: (newQuestion) => {
+      console.log("useAddQuestion onSuccess: newQuestion", newQuestion);
+      queryClient.setQueryData(['questions'], (oldQuestions) => {
+        console.log("useAddQuestion onSuccess: oldQuestions from cache", oldQuestions);
+        const updatedQuestions = oldQuestions ? [...oldQuestions, newQuestion] : [newQuestion];
+        console.log("useAddQuestion onSuccess: updatedQuestions for cache", updatedQuestions);
+        return updatedQuestions;
+      });
     },
   });
 };
